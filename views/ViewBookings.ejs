@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Home.css" />
+    <link rel="stylesheet" href="/ViewBookings.css" />
+    <title>Bookings - Fit Kwick</title>
+</head>
+
+<body>
+    <a class="home" href="/">
+        <button>Home</button>
+    </a>
+    <div class="nav">
+        <h1>View Bookings</h1>
+    </div>
+    <div class="bookings_container">
+        <% bookings.forEach((booking)=> { %>
+            <div class="booking_container">
+                <p>
+                    <%= booking.name %> =>
+                    <%= booking.booking_number %>
+                </p>
+                <button value=<%=booking.booking_number %> >view</button>
+            </div>
+            <% }); %>
+    </div>
+    <div class="modal_container"></div>
+</body>
+<script>
+
+    /**
+     * c =>                 it receives all the customers list from the backend 
+     *                      using EJS
+     * 
+     * modalContainer =>    modal container is a div on frontend that is used to
+     *                      store the modal html when user clicks on view button
+     * 
+     * bookingContainer =>  booking container basically is used to iterate over
+     *                      all the bookings so we can put the event listener
+     *                      on all of the buttons                    
+     * */
+    const c = <%- JSON.stringify(bookings) %>;
+    const modalContainer = document.querySelector(".modal_container");
+    const bookingContainer =
+        document.getElementsByClassName("booking_container");
+
+    /**
+     * 
+     * this loop iterates over all the components and adds the event listener such that
+     * on the click on view button a modal is rendered which gives us more details about
+     * our customer
+     * */    
+    for (let booking of bookingContainer) {
+        booking.children[1].addEventListener("click", (e) => {
+            e.preventDefault();
+
+            // searches the clicked view button
+            let temp = c.filter((f) => { 
+                return f.booking_number == e.target.value
+            })[0];
+
+            // the modal template with custom data for each customer
+            let template = `
+              <div class="modal">
+                <div class="data_container">
+                  <p><strong>Booking Number:</strong></p>
+                  <p>${temp.booking_number}</p>
+                  <p><strong>Date:</strong></p>
+                  <p>${temp.date.substring(0, 10)}</p>
+                  <p><strong>Time:</strong></p>
+                  <p>${temp.time}</p>
+                  <p><strong>Activity Type:</strong></p>
+                  <p>${temp.activity_type}</p>
+                  <p><strong>Customer ID:</strong></p>
+                  <p>${temp.customer_id}</p>
+                  <p><strong>Customer:</strong></p>
+                  <p>${temp.name}</p>
+                  <p><strong>Address:</strong></p>
+                  <p>${temp.address}</p>
+                  <p><strong>Membership Type:</strong></p>
+                  <p>${temp.membership_type}</p>
+                  <p><strong>Guest Passes:</strong></p>
+                  <p>${temp.guest_passes}</p>
+                </div>
+                <div class="shadow"></div>
+              </div>
+                `;
+
+                // renders the modal
+            modalContainer.innerHTML = template;
+        });
+    }
+
+
+    /**
+     * 
+     * 
+     * this event is applied on whole of the modal so
+     * wherever you would click on it, it would remove
+     * the modal from the DOM
+     * */
+    modalContainer.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        // removes the modal from the DOM
+        modalContainer.innerHTML = "";
+    });
+</script>
+
+</html>

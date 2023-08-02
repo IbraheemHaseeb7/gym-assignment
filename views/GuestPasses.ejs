@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Home.css" />
+    <link rel="stylesheet" href="/CreateCustomer.css" />
+    <link rel="stylesheet" href="/CreateBookings.css" />
+    <title>Guest Passes - Fit Kwick</title>
+  </head>
+  <body>
+    <a class="home" href="/">
+      <button>Home</button>
+    </a>
+    <div class="nav">
+      <h1>Use Guest Passes</h1>
+    </div>
+    <div class="form_container">
+      <form class="form">
+        <label>Customers</label>
+        <select id="customers" class="select">
+          <% customers.forEach((customer)=> { %>
+                <option value=<%=customer.customer_id %>> <%= customer.name %> (Available Passes: <%= customer.guest_passes %>)  </option>
+            <% }); %>
+        </select>
+        <label>Guest Passes to Use</label>
+        <input
+          id="guestPasses"
+          type="number"
+          name="guestPasses"
+          placeholder="Enter how many guest passes you want to use..."
+        />
+        <button id="pass">Use Guest Pass</button>
+      </form>
+    </div>
+  </body>
+
+  <script>
+    /**
+     *
+     * c => its the list of all the customers returned from the database
+     *      to the client side for further processing
+     * guestPasses => its the input element returned from the DOM that 
+     *                is used to chose the amount of guest passes to use
+     * customer => its the input element returned from the DOM that is
+     *             used to select customer
+     * pass => pass is the button that is used to execute the requirement
+     * */
+    const c = <%- JSON.stringify(customers) %>;
+    const guestPasses = document.getElementById("guestPasses");
+    const customer = document.getElementById("customers");
+
+    const pass = document.getElementById("pass");
+
+    /**
+     * this event is triggered when the use guest pass button is clicked once.
+     * It also validates that none of our fields are empty.
+     * If any field is found empty it would alert the user and won't let
+     * the input go to the backend unless all the conditions are saitisfied
+     * 
+     * It also verifies that you have enough guest passes to accomodate your needs.
+     *
+     * Once all the conditions are satisfied, it then sends a POST request
+     * to the /api/useGuestPass route that then handles the request and
+     * send an appropriate response back to the front end
+     * */
+    pass.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      if (
+        guestPasses.value === "" ||
+        customer.value === ""
+      ) {
+
+        // if any of the field is empty
+        alert("Please fill out all the fields");
+      } else {
+        if (guestPasses.value < 0) {
+
+            // if you enterd a negative value in the input field
+            alert("Please enter a positive number of guest passes")
+        } else {
+
+            const foundCustomer = c.filter((f) => {
+                return f.customer_id === customer.value;
+            })[0]; 
+
+            const leftPasses = foundCustomer.guest_passes - guestPasses.value; 
+            if (leftPasses < 0) {
+
+                // if you entered a amount of guest passes that
+                // exceeds the limit you already have
+                alert("You do not have enough passes. Please buy more passes to avail this opportunity")
+            } else {
+                
+                // successful request to the backend route
+                await fetch("/api/useGuestPass", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    customer_id: foundCustomer.customer_id,
+                    guest_passes: leftPasses,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                })
+                  .then((res) => {
+                    return res.json();
+                  })
+                  .then((res) => {
+                    guestPasses.value = "";
+      
+                    alert("Successfully used a new guest pass");
+                  });
+
+                  location.reload();
+            }
+        }
+      }
+    });
+  </script>
+</html>

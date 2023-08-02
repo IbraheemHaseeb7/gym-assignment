@@ -1,0 +1,106 @@
+* {
+  color: white;
+  margin: 0;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #272727;
+  background-image: url("https://media.istockphoto.com/id/1322158059/photo/dumbbell-water-bottle-towel-on-the-bench-in-the-gym.jpg?s=612x612&w=0&k=20&c=CIdh6LPGwU6U6lbvKCdd7LcppidaYwcDawXJI-b0yGE=");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 8rem;
+}
+
+.nav h1 {
+  width: 100%;
+  font-size: 3.5rem;
+  text-align: center;
+}
+
+.buttons_container {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: repeat(3, 12rem);
+  grid-template-rows: 4rem 4rem;
+  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+input {
+  width: 100%;
+  height: 2rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  border: 2px solid #213547;
+  font-size: 1rem;
+  transition: all 0.25s;
+}
+
+input:hover,
+input:focus {
+  border-color: #646cff;
+}
+
+.home {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+@media (max-width: 700px) {
+  .nav h1 {
+    font-size: 2.5rem;
+  }
+  
+  .buttons_container {
+    grid-template-columns: repeat(2, 10rem);
+    gap: 1rem;
+  }
+}

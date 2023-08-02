@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Home.css" />
+    <link rel="stylesheet" href="/CreateCustomer.css" />
+    <link rel="stylesheet" href="/CreateBookings.css" />
+    <title>Create Booking - Fit Kwick</title>
+  </head>
+  <body>
+    <a class="home" href="/">
+      <button>Home</button>
+    </a>
+    <div class="nav">
+      <h1>Create Bookings</h1>
+    </div>
+    <div class="form_container">
+      <form class="form">
+        <label>Customers</label>
+        <select id="customers" class="select">
+          <% customers.forEach((customer)=> { %>
+                <option value=<%=customer.customer_id %>> <%= customer.name %>  </option>
+            <% }); %>
+        </select>
+        <label>Date</label>
+        <input
+          id="date"
+          type="date"
+          name="date"
+          placeholder="Enter booking date"
+        />
+        <label>Time</label>
+        <input
+          id="time"
+          type="time"
+          name="time"
+          placeholder="Enter booking time"
+        />
+        <label>Activity Type</label>
+        <select id="activityType" class="select">
+          <option value="swim" label="Swim" />
+          <option value="gym" label="Gym" />
+        </select>
+        <button id="register">Register</button>
+      </form>
+    </div>
+  </body>
+
+  <script>
+    /**
+     *
+     * date => date input field from the html
+     * time => time input field from the html
+     * customers => customers input field from the html
+     * activityType => activity type input field from the html
+     *
+     * register => register button that is pressed to register a new customer
+     * */
+    const date = document.getElementById("date");
+    const time = document.getElementById("time");
+    const customers = document.getElementById("customers");
+    const activityType = document.getElementById("activityType");
+
+    const register = document.getElementById("register");
+
+    /**
+     * this event is triggered when the register button is clicked once.
+     * It also validates that none of our fields are empty.
+     * If any field is found empty it would alert the user and won't let
+     * the input go to the backend unless all the conditions are saitisfied
+     *
+     * Once all the conditions are satisfied, it then sends a POST request
+     * to the /api/createBooking route that then handles the request and
+     * send an appropriate response back to the front end
+     * */
+    register.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      if (
+        date.value === "" ||
+        time.value === "" ||
+        customers.value === "" ||
+        activityType.value === ""
+      ) {
+        alert("Please fill out all the fields");
+      } else {
+
+          await fetch("/api/createBooking", {
+            method: "POST",
+            body: JSON.stringify({
+              date: date.value,
+              time: time.value,
+              customer_id: customers.value,
+              activity_type: activityType.value,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => {
+              return res.json();
+            })
+            .then((res) => {
+              date.value = "";
+              time.value = "";
+
+              alert("Successfully created a new Booking");
+            });
+      }
+    });
+  </script>
+</html>

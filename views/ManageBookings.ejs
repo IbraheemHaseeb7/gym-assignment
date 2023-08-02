@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Home.css" />
+    <link rel="stylesheet" href="/ViewBookings.css" />
+    <title>Bookings - Fit Kwick</title>
+</head>
+
+<body>
+    <a class="home" href="/">
+        <button>Home</button>
+    </a>
+    <div class="nav">
+        <h1>View Bookings</h1>
+    </div>
+    <div class="bookings_container">
+        <% bookings.forEach((booking)=> { %>
+            <div class="booking_container">
+                <p>
+                    <%= booking.name %> =>
+                    <%= booking.booking_number %>
+                </p>
+                <button value=<%=booking.booking_number %> >delete</button>
+            </div>
+            <% }); %>
+    </div>
+</body>
+<script>
+
+    /**
+     * c =>                 it receives all the bookings list from the backend 
+     *                      using EJS
+     * 
+     * bookingContainer =>  booking container basically is used to iterate over
+     *                      all the bookings so we can put the event listener
+     *                      on all of the buttons                    
+     * */
+    const c = <%- JSON.stringify(bookings) %>;
+    const bookingContainer =
+        document.getElementsByClassName("booking_container");
+
+    /**
+     * 
+     * this loop iterates over all the components and adds the event listener such that
+     * on the click on view button a modal is rendered which gives us more details about
+     * our customer
+     * */    
+    for (let booking of bookingContainer) {
+        booking.children[1].addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            // searches the clicked view button
+            let temp = c.filter((f) => { 
+                return f.booking_number == e.target.value
+            })[0];
+
+            await fetch("/api/deleteBooking", {
+                method: "POST",
+                body: JSON.stringify({ id: temp.booking_number }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(() => {
+                location.reload();
+            })
+        });
+    }
+</script>
+
+</html>

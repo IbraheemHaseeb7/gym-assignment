@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Home.css" />
+    <link rel="stylesheet" href="/CreateCustomer.css" />
+    <title>Create Customer Record - Fit Kwick</title>
+  </head>
+  <body>
+    <a class="home" href="/">
+      <button>Home</button>
+    </a>
+    <div class="nav">
+      <h1>Create Customer Records</h1>
+    </div>
+    <div class="form_container">
+      <form class="form">
+        <label>Name</label>
+        <input
+          id="name"
+          type="text"
+          name="name"
+          placeholder="Enter your name: "
+        />
+        <label>Address</label>
+        <input
+          id="address"
+          type="text"
+          name="address"
+          placeholder="Enter your address: "
+        />
+        <label>Guest Passes</label>
+        <input
+          id="guestPasses"
+          type="number"
+          name="guestPasses"
+          placeholder="Enter guest passes count: "
+          value="3"
+        />
+        <label>Membership Status</label>
+        <select id="membershipStatus" class="select">
+          <option value="bronze" label="Bronze" />
+          <option value="silver" label="Silver" />
+          <option value="gold" label="Gold" />
+        </select>
+        <button id="register">Register</button>
+      </form>
+    </div>
+  </body>
+
+  <script>
+
+    /**
+     * 
+     * name => name input field from the html
+     * address => address input field from the html
+     * guest passes => guest passes input field from the html
+     * membership status => membership status input field from the html
+     * 
+     * register => register button that is pressed to register a new customer
+     * */
+    const name = document.getElementById("name");
+    const address = document.getElementById("address");
+    const guestPasses = document.getElementById("guestPasses");
+    const membershipStatus = document.getElementById("membershipStatus");
+
+    const register = document.getElementById("register");
+
+    /**
+     * this event is triggered when the register button is clicked once.
+     * It also validates that none of our fields are empty.
+     * If any field is found empty it would alert the user and won't let
+     * the input go to the backend unless all the conditions are saitisfied
+     * 
+     * Once all the conditions are satisfied, it then sends a POST request
+     * to the /api/createCustomer route that then handles the request and
+     * send an appropriate response back to the front end
+     * */
+    register.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      if (
+        name.value === "" ||
+        address.value === "" ||
+        guestPasses.value === "" ||
+        membershipStatus.value === ""
+      ) {
+        alert("Please fill out all the fields");
+      } else {
+        if (guestPasses.value < 0) {
+          alert("Please give 0 or greater value to `Guest Passes`");
+        } else {
+          await fetch("/api/createCustomer", {
+            method: "POST",
+            body: JSON.stringify({
+              name: name.value,
+              address: address.value,
+              guestPasses: guestPasses.value,
+              membershipStatus: membershipStatus.value,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => {
+              return res.json();
+            })
+            .then((res) => {
+              name.value = '';
+              address.value = '';
+
+              alert("Successfully added a new client")
+            });
+        }
+      }
+    });
+  </script>
+</html>
